@@ -1,6 +1,7 @@
 package modelo
 
 import "hospital/datos"
+import "hospital/util"
 
 type Doctor struct {
 	id int
@@ -9,12 +10,31 @@ type Doctor struct {
 	Apellidos string
 }
 
+func NuevoDoctor() *Doctor{
+	doc := new(Doctor)
+	return doc
+}
+
+func (doc *Doctor) encrypt() ([]byte, []byte, []byte) {
+	cifra := util.NuevoCifrador()
+	return cifra.Encrypt([]byte(doc.DNI)), cifra.Encrypt([]byte(doc.Nombre)), cifra.Encrypt([]byte(doc.Apellidos))
+}
+
+func (doc *Doctor) decrypt(dni []byte, nombre []byte, apellidos []byte) {
+	cifra := util.NuevoCifrador()
+	doc.DNI = string(cifra.Decrypt(dni))
+	doc.Nombre = string(cifra.Decrypt(nombre))
+	doc.Apellidos = string(cifra.Decrypt(apellidos))
+}
+
 func (doc *Doctor) GetById(id int) *Doctor {
 	database.Connect()
 	defer database.Close()
 	rows := database.ExecuteQuery("SELECT * FROM doctores WHERE id = ?",id)
 	rows.Next()
-	rows.Scan(&doc.id,&doc.DNI,&doc.Nombre,&doc.Apellidos)
+	var dni, nombre, apellidos []byte
+	rows.Scan(&doc.id,&dni,&nombre,&apellidos)
+	doc.decrypt(dni,nombre,apellidos)
 	return doc
 }
 
@@ -28,7 +48,8 @@ func (doc *Doctor) insert() {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("INSERT INTO doctores (DNI, Nombre, Apellidos) VALUES (?,?,?)", doc.DNI, doc.Nombre, doc.Apellidos);
+	dni, nombre , apellidos := doc.encrypt()
+	database.ExecuteNonQuery("INSERT INTO doctores (DNI, Nombre, Apellidos) VALUES (?,?,?)", dni, nombre, apellidos);
 	rows := database.ExecuteQuery("SELECT MAX(id) FROM doctores")
 	rows.Next()
 	var last int
@@ -42,7 +63,8 @@ func (doc *Doctor) update() bool {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE id = ?",doc.DNI,doc.Nombre,doc.Apellidos,doc.id)
+	dni, nombre , apellidos := doc.encrypt()
+	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE id = ?",dni,nombre,apellidos,doc.id)
 	return true
 }
 

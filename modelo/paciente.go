@@ -15,6 +15,18 @@ func NuevoPaciente() *Paciente {
 	return pac
 }
 
+func (pac *Paciente) encrypt() ([]byte, []byte, []byte) {
+	cifra := util.NuevoCifrador()
+	return cifra.Encrypt([]byte(pac.DNI)), cifra.Encrypt([]byte(pac.Nombre)), cifra.Encrypt([]byte(pac.Apellidos))
+}
+
+func (pac *Paciente) decrypt(dni []byte, nombre []byte, apellidos []byte) {
+	cifra := util.NuevoCifrador()
+	pac.DNI = string(cifra.Decrypt(dni))
+	pac.Nombre = string(cifra.Decrypt(nombre))
+	pac.Apellidos = string(cifra.Decrypt(apellidos))
+}
+
 func (pac *Paciente) Save() bool {
 	if(pac.id != 0) {
 		return pac.update()
@@ -34,10 +46,7 @@ func (pac *Paciente) GetById(id int) *Paciente {
 	rows.Next()
 	var dni, nombre, apellidos []byte
 	rows.Scan(&pac.id,&dni,&nombre,&apellidos)
-	cifra := util.NuevoCifrador()
-	pac.DNI = string(cifra.Decrypt(dni))
-	pac.Nombre = string(cifra.Decrypt(nombre))
-	pac.Apellidos = string(cifra.Decrypt(apellidos))
+	pac.decrypt(dni,nombre,apellidos)
 	return pac
 }
 
@@ -50,9 +59,7 @@ func (pac *Paciente) Search(dnis string) *Paciente {
 	rows.Next()
 	var dni, nombre, apellidos []byte
 	rows.Scan(&pac.id,&dni,&nombre,&apellidos)
-	pac.DNI = string(cifra.Decrypt(dni))
-	pac.Nombre = string(cifra.Decrypt(nombre))
-	pac.Apellidos = string(cifra.Decrypt(apellidos))
+	pac.decrypt(dni,nombre,apellidos)
 	return pac
 }
 
@@ -66,10 +73,7 @@ func (pac *Paciente) insert() {
 	}
 	database.Connect()
 	defer database.Close()
-	cifra := util.NuevoCifrador()
-	dni := cifra.Encrypt([]byte(pac.DNI))
-	nombre := cifra.Encrypt([]byte(pac.Nombre))
-	apellidos := cifra.Encrypt([]byte(pac.Apellidos))
+	dni, nombre, apellidos := pac.encrypt()
 	database.ExecuteNonQuery("INSERT INTO pacientes (DNI, Nombre, Apellidos) VALUES (?,?,?)", dni,nombre,apellidos);
 	rows := database.ExecuteQuery("SELECT MAX(id) FROM pacientes")
 	rows.Next()
@@ -94,6 +98,7 @@ func (pac *Paciente) update() bool {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE id = ?",pac.DNI,pac.Nombre,pac.Apellidos,pac.id)
+	dni, nombre, apellidos := pac.encrypt()
+	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE id = ?",dni,nombre,apellidos,pac.id)
 	return true
 }

@@ -14,17 +14,16 @@ CREATE TABLE IF NOT EXISTS Pacientes
 CREATE TABLE IF NOT EXISTS Doctores
 (
 	Id int Primary Key Auto_Increment,
-	DNI char(9),
-	Nombre varchar(20),
-	Apellidos varchar(40),
-	Password blob
+	DNI blob,
+	Nombre blob,
+	Apellidos blob
 );
 
 CREATE TABLE IF NOT EXISTS Tratamientos
 (
 	Id int Primary Key Auto_Increment,
-	NombreEnfermedad varchar(40),
-	Observaciones varchar(255)
+	NombreEnfermedad blob,
+	Observaciones blob
 );
 
 CREATE TABLE IF NOT EXISTS Historiales

@@ -1,6 +1,7 @@
 package modelo
 
 import "hospital/datos"
+import "hospital/util"
 
 type Tratamiento struct {
 	id int
@@ -8,12 +9,30 @@ type Tratamiento struct {
 	Observaciones string
 }
 
+func NuevoTratamiento() *Tratamiento {
+	tr := new(Tratamiento)
+	return tr
+}
+
+func (tr *Tratamiento) encrypt() ([]byte, []byte) {
+	cifra := util.NuevoCifrador()
+	return cifra.Encrypt([]byte(tr.NombreEnfermedad)), cifra.Encrypt([]byte(tr.Observaciones))
+}
+
+func (tr *Tratamiento) decrypt(nombreEnfermedad []byte, observaciones []byte) {
+	cifra := util.NuevoCifrador()
+	tr.NombreEnfermedad = string(cifra.Decrypt(nombreEnfermedad))
+	tr.Observaciones = string(cifra.Decrypt(observaciones))
+}
+
 func (tr *Tratamiento) GetById(id int) *Tratamiento {
 	database.Connect()
 	defer database.Close()
 	rows := database.ExecuteQuery("SELECT * FROM tratamientos WHERE id = ?",id)
 	rows.Next()
-	rows.Scan(&tr.id,&tr.NombreEnfermedad,&tr.Observaciones)
+	var nombreEnfermedad, observaciones []byte
+	rows.Scan(&tr.id,&nombreEnfermedad,&observaciones)
+	tr.decrypt(nombreEnfermedad,observaciones)
 	return tr
 }
 
@@ -27,7 +46,8 @@ func (tr *Tratamiento) insert() {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("INSERT INTO tratamientos (NombreEnfermedad, Observaciones) VALUES (?,?)",tr.NombreEnfermedad,tr.Observaciones)
+	nombreEnfermedad, observaciones := tr.encrypt()
+	database.ExecuteNonQuery("INSERT INTO tratamientos (NombreEnfermedad, Observaciones) VALUES (?,?)",nombreEnfermedad,observaciones)
 	rows:= database.ExecuteQuery("SELECT MAX(id) FROM tratamientos")
 	rows.Next()
 	var last int
@@ -41,7 +61,8 @@ func (tr * Tratamiento) update() bool {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("UPDATE tratamientos SET NombreEnfermedad = ?, Observaciones = ? WHERE id = ?",tr.NombreEnfermedad,tr.Observaciones,tr.id)
+	nombreEnfermedad, observaciones := tr.encrypt()
+	database.ExecuteNonQuery("UPDATE tratamientos SET NombreEnfermedad = ?, Observaciones = ? WHERE id = ?",nombreEnfermedad,observaciones,tr.id)
 	return true
 }
 

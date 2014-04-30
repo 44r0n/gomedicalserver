@@ -11,43 +11,23 @@ import (
 	//"time"
 )
 
-func main() {
-	/*key := []byte("taca")
-	texto := []byte("a crifrar")
-	cifrador, _ := rc4.NewCipher(key)
-	cifrador.XORKeyStream(texto,texto)
-	salsa.XORKeyStream
-	fmt.Println(texto)
-	cifrador, _ = rc4.NewCipher(key)
-	cifrador.XORKeyStream(texto,texto)
-	fmt.Printf("after decoding, src=% s\n", texto)*/
-
-	/*var key [32]byte
-	var rckey []byte
-	contra := "qwertyuiopasdfghjklñzxcvbnm12345"
-	copy(key[:],contra)
-	rckey = key[:]
-	plaintext := []byte("To encrypt")
-
-	salsa20.XORKeyStream(plaintext,plaintext,[]byte("12345678"),&key)
-	fmt.Println(plaintext)
-	cifrador, _ := rc4.NewCipher(rckey)
-	cifrador.XORKeyStream(plaintext,plaintext)
-	fmt.Println(plaintext)
-	cifrador, _ = rc4.NewCipher(rckey)
-	cifrador.XORKeyStream(plaintext,plaintext)
-	salsa20.XORKeyStream(plaintext,plaintext,[]byte("12345678"),&key)
-	texto := string(plaintext)
-	fmt.Println(texto)*/
-	
+func main() {	
 
 	p := modelo.NuevoPaciente()
+	p.DNI = "12345678S"
+	p.Nombre = "Manolo"
+	p.Apellidos = "Solo"
+	p.Save()
+	fmt.Println("Paciente Guardado")
+
+	p2 := modelo.NuevoPaciente()
+
 	//p.Search("12345678S")
 
-	p.GetById(1)	
-	fmt.Println(p.DNI)
-	fmt.Println(p.Nombre)
-	fmt.Println(p.Apellidos)
+	p2.GetById(1)	
+	fmt.Println(p2.DNI)
+	fmt.Println(p2.Nombre)
+	fmt.Println(p2.Apellidos)
 	/*p.Nombre = "Angel"
 	p.Save()
 	fmt.Println(p.DNI)
@@ -58,25 +38,34 @@ func main() {
 		fmt.Println("Eliminado")
 	}*/
 
-	/*p.DNI = "12345678S"
-	p.Nombre = "Manolo"
-	p.Apellidos = "Solo"
-	p.Save()
-	fmt.Println("Paciente Guardado")*/
+	
 
-	/*d := new(modelo.Doctor)
+	d := modelo.NuevoDoctor()
 	d.DNI = "23456789B"
 	d.Nombre = "Pepe"
 	d.Apellidos = "Ese"
 	d.Save()
 	fmt.Println("Doctor Guardado")
 
+	d2 := modelo.NuevoDoctor()
+	d2.GetById(1)
+	fmt.Println(d2.DNI)
+	fmt.Println(d2.Nombre)
+	fmt.Println(d2.Apellidos)
+
+	
 	t := new(modelo.Tratamiento)
 	t.NombreEnfermedad = "Una"
 	t.Observaciones = "Te veo"
 	t.Save()
 	fmt.Println("Tratamiento Guardado")
 
+	t2 := new(modelo.Tratamiento)
+	t2.GetById(1)
+	fmt.Println(t2.NombreEnfermedad)
+	fmt.Println(t2.Observaciones)
+
+	/*
 	h := new(modelo.Historial)
 	h.Paciente = p.GetId()
 	h.Doctor = d.GetId()
