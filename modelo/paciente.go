@@ -8,12 +8,10 @@ type Paciente struct {
 	DNI string
 	Nombre string
 	Apellidos string
-	contraseña string
 }
 
-func NuevoPaciente(contraseña string) *Paciente {
+func NuevoPaciente() *Paciente {
 	pac := new(Paciente)
-	pac.contraseña = contraseña
 	return pac
 }
 
@@ -36,9 +34,7 @@ func (pac *Paciente) GetById(id int) *Paciente {
 	rows.Next()
 	var dni, nombre, apellidos []byte
 	rows.Scan(&pac.id,&dni,&nombre,&apellidos)
-	var key [32]byte
-	copy(key[:],pac.contraseña)
-	cifra := util.NuevoCifrador(key,[]byte("12345678"))
+	cifra := util.NuevoCifrador()
 	pac.DNI = string(cifra.Decrypt(dni))
 	pac.Nombre = string(cifra.Decrypt(nombre))
 	pac.Apellidos = string(cifra.Decrypt(apellidos))
@@ -48,9 +44,7 @@ func (pac *Paciente) GetById(id int) *Paciente {
 func (pac *Paciente) Search(dnis string) *Paciente {
 	database.Connect()
 	defer database.Close()
-	var key [32]byte
-	copy(key[:], pac.contraseña)
-	cifra := util.NuevoCifrador(key,[]byte("12345678"))
+	cifra := util.NuevoCifrador()
 	dnib := cifra.Encrypt([]byte(dnis))
 	rows := database.ExecuteQuery("SELECT * FROM pacientes WHERE DNI = ?",dnib)
 	rows.Next()
@@ -72,9 +66,7 @@ func (pac *Paciente) insert() {
 	}
 	database.Connect()
 	defer database.Close()
-	var key [32]byte
-	copy(key[:],pac.contraseña)
-	cifra := util.NuevoCifrador(key,[]byte("12345678"))
+	cifra := util.NuevoCifrador()
 	dni := cifra.Encrypt([]byte(pac.DNI))
 	nombre := cifra.Encrypt([]byte(pac.Nombre))
 	apellidos := cifra.Encrypt([]byte(pac.Apellidos))

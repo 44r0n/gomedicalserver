@@ -1,6 +1,7 @@
 package modelo
 
 import "hospital/datos"
+//import "hospital/util"
 import "time"
 
 type Historial struct {
@@ -18,7 +19,8 @@ func(hs *Historial) GetById(id int) *Historial {
 	defer database.Close()
 	rows := database.ExecuteQuery("SELECT * FROM historiales WHERE id = ?",id)
 	rows.Next()
-	rows.Scan(&hs.id,&hs.Paciente,&hs.Doctor,&hs.Observaciones,&fecha,&hs.Tratamiento)
+	var observaciones string
+	rows.Scan(&hs.id,&hs.Paciente,&hs.Doctor,&observaciones,&fecha,&hs.Tratamiento)
 	hs.Fecha,_  = time.Parse("2006-01-02",fecha)
 	return hs
 }

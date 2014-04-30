@@ -8,19 +8,21 @@ import (
 type Cifrador struct {
 	key [32]byte
 	nonce[] byte
+	rckey [32]byte
 }
 
-func NuevoCifrador(key [32]byte, nonce []byte) *Cifrador {
+func NuevoCifrador() *Cifrador {
 	cf := new(Cifrador)
-	cf.key = key
-	cf.nonce = nonce
+	copy(cf.key[:], "O?SvUec4TXkV58CL-p?C*;K./Rt.v+BL")
+	cf.nonce = []byte("-Ts#RVaZY?2Hy_geC36(KhH;")
+	copy(cf.rckey[:], "Hh;F.#@>7>7~1#nu9K9gQ6_^M)&&X*8w")
 	return cf
 }
 
 func (cf *Cifrador) Encrypt(aencriptar []byte) []byte {
 	res := aencriptar
 	salsa20.XORKeyStream(res, res, cf.nonce, &cf.key)
-	rckey := cf.key[:]
+	rckey := cf.rckey[:]
 	crc4, err := rc4.NewCipher(rckey)
 	if err != nil {
 		panic(err)
@@ -31,7 +33,7 @@ func (cf *Cifrador) Encrypt(aencriptar []byte) []byte {
 
 func (cf *Cifrador) Decrypt(desencriptar []byte) []byte {
 	res := desencriptar
-	rckey := cf.key[:]
+	rckey := cf.rckey[:]
 	crc4, err := rc4.NewCipher(rckey)
 	if err != nil {
 		panic (err)

@@ -41,7 +41,7 @@ func main() {
 	fmt.Println(texto)*/
 	
 
-	p := modelo.NuevoPaciente("qwertyuiopasdfghjklñzxcvbnm12345")
+	p := modelo.NuevoPaciente()
 	//p.Search("12345678S")
 
 	p.GetById(1)	
