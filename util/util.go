@@ -3,12 +3,38 @@ package util
 import (
 	"crypto/rc4"
 	"code.google.com/p/go.crypto/salsa20"
+	"math/rand"
+    "time"
+    "code.google.com/p/go.crypto/scrypt"
+	"bytes"
 )
 
 type Cifrador struct {
 	key [32]byte
 	nonce[] byte
 	rckey [32]byte
+}
+
+var n, r, p, keylen int
+
+func init() {
+	n = 65536
+	r = 16
+	p = 3
+	keylen = 32
+}
+
+func NuevaContraseña(password string) ([]byte, []byte) {
+	salt := RandomString()
+	dk, _ := scrypt.Key([]byte(password), []byte(salt),n, r, p, keylen)
+	cifra := NuevoCifrador()
+	return dk, cifra.Encrypt([]byte(salt))
+}
+
+func CheckPassword(plainpassword string, password, salte []byte) bool {
+	cifra := NuevoCifrador()
+	dk, _ := scrypt.Key([]byte(plainpassword), cifra.Decrypt(salte), 65536, 16, 3, 32)
+	return bytes.Equal(dk,password)
 }
 
 func NuevoCifrador() *Cifrador {
@@ -41,4 +67,26 @@ func (cf *Cifrador) Decrypt(desencriptar []byte) []byte {
 	crc4.XORKeyStream(res, res)
 	salsa20.XORKeyStream(res,res,cf.nonce, &cf.key)
 	return res
+}
+
+func RandomString() string {
+	//min 33 - 126
+	min := 33
+	max := 126
+    var result   bytes.Buffer
+    var temp string
+    l := randInt(8,32)
+    for i:=0 ; i<l ;  {
+        if string(randInt(min,max))!=temp {
+        temp = string(randInt(min,max))
+        result.WriteString(temp)
+        i++
+      }
+    }
+	return result.String()
+}
+
+func randInt(min int , max int) int {
+        rand.Seed( time.Now().UTC().UnixNano())
+        return min + rand.Intn(max-min)
 }

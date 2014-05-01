@@ -16,7 +16,10 @@ CREATE TABLE IF NOT EXISTS Doctores
 	Id int Primary Key Auto_Increment,
 	DNI blob,
 	Nombre blob,
-	Apellidos blob
+	Apellidos blob,
+	Password blob,
+	Salt blob
+
 );
 
 CREATE TABLE IF NOT EXISTS Tratamientos

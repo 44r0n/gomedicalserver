@@ -88,7 +88,7 @@ func (pac *Paciente) Delete() bool {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("DELETE FROM pacientes WHERE id = ?",pac.id)
+	database.ExecuteNonQuery("DELETE FROM pacientes WHERE Id = ?",pac.id)
 	return true
 }
 
@@ -99,6 +99,6 @@ func (pac *Paciente) update() bool {
 	database.Connect()
 	defer database.Close()
 	dni, nombre, apellidos := pac.encrypt()
-	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE id = ?",dni,nombre,apellidos,pac.id)
+	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE Id = ?",dni,nombre,apellidos,pac.id)
 	return true
 }
