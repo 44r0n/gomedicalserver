@@ -11,7 +11,7 @@ import (
 	//"time"
 	//"code.google.com/p/go.crypto/scrypt"
 	//"math/rand"
-    //"time"
+    "time"
     //"bytes"
     //"hospital/util"
 )
@@ -47,7 +47,7 @@ func main() {
 
 	fmt.Println(dk)*/
 
-	/*p := modelo.NuevoPaciente()
+	p := modelo.NuevoPaciente()
 	p.DNI = "12345678S"
 	p.Nombre = "Manolo"
 	p.Apellidos = "Solo"
@@ -56,7 +56,7 @@ func main() {
 	p.Nombre = "Antonio"
 	p.Save()
 
-	p2 := modelo.NuevoPaciente()*/
+	//p2 := modelo.NuevoPaciente()
 
 	//p.Search("12345678S")
 
@@ -92,7 +92,7 @@ func main() {
 	fmt.Println(d.DNI)
 	fmt.Println(d.Nombre)
 	fmt.Println(d.Apellidos)*/
-	if d.SetPassword("taca") {
+	/*if d.SetPassword("taca") {
 		fmt.Println("Contraseña establecida")
 	} else {
 		fmt.Println("La contraseña no se ha guardado")
@@ -102,7 +102,7 @@ func main() {
 		fmt.Println("Autenticado")
 	} else {
 		fmt.Println("No autenticado")
-	}
+	}*/
 
 	/*d2 := modelo.NuevoDoctor()
 	d2.GetById(1)
@@ -110,29 +110,30 @@ func main() {
 	fmt.Println(d2.Nombre)
 	fmt.Println(d2.Apellidos)*/
 
-	/*
+	
 	t := new(modelo.Tratamiento)
 	t.NombreEnfermedad = "Una"
 	t.Observaciones = "Te veo"
 	t.Save()
 	fmt.Println("Tratamiento Guardado")
 
-	t2 := new(modelo.Tratamiento)
+	/*t2 := new(modelo.Tratamiento)
 	t2.GetById(1)
 	fmt.Println(t2.NombreEnfermedad)
 	fmt.Println(t2.Observaciones)*/
 
-	/*
+	
 	h := new(modelo.Historial)
 	h.Paciente = p.GetId()
 	h.Doctor = d.GetId()
 	h.Tratamiento = t.GetId()
 	h.Observaciones = "Observación de tratamiento"
 	h.Fecha = time.Now()
-	h.Save()
-	fmt.Println("Historial Guardado")*/
-	/*h := new(modelo.Historial)
-	h.GetById(1)
-	fmt.Println(h.Fecha.Format("2006-01-02"))*/
+	if h.Save() {
+		fmt.Println("Historial Guardado")
+	}
+	h1 := new(modelo.Historial)
+	h1.GetById(1)
+	fmt.Println(h1.Fecha.Format("2006-01-02"))
 
 }

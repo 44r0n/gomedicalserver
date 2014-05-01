@@ -1,7 +1,7 @@
 package modelo
 
 import "hospital/datos"
-//import "hospital/util"
+import "hospital/util"
 import "time"
 
 type Historial struct {
@@ -13,15 +13,25 @@ type Historial struct {
 	Fecha time.Time
 }
 
+func (hs *Historial) encrypt() ([]byte, []byte) {
+	cifra := util.NuevoCifrador()
+	return cifra.Encrypt([]byte(hs.Observaciones)), cifra.Encrypt([]byte(hs.Fecha.Format("2006-01-02")))
+}
+
+func (hs *Historial) decrypt(observaciones, fecha []byte) {
+	cifra := util.NuevoCifrador()
+	hs.Observaciones = string(cifra.Decrypt(observaciones))
+	hs.Fecha, _ = time.Parse("2006-01-02",string(cifra.Decrypt(fecha)))
+}
+
 func(hs *Historial) GetById(id int) *Historial {
-	var fecha string
 	database.Connect()
 	defer database.Close()
 	rows := database.ExecuteQuery("SELECT * FROM historiales WHERE id = ?",id)
 	rows.Next()
-	var observaciones string
+	var observaciones, fecha []byte
 	rows.Scan(&hs.id,&hs.Paciente,&hs.Doctor,&observaciones,&fecha,&hs.Tratamiento)
-	hs.Fecha,_  = time.Parse("2006-01-02",fecha)
+	hs.decrypt(observaciones,fecha)
 	return hs
 }
 
@@ -35,7 +45,8 @@ func (hs *Historial) insert() {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("INSERT INTO historiales (Paciente, Doctor, Observaciones, Tratamiento, Fecha) VALUES (?,?,?,?,?)",hs.Paciente,hs.Doctor,hs.Observaciones,hs.Tratamiento,hs.Fecha)
+	observaciones, fecha := hs.encrypt()
+	database.ExecuteNonQuery("INSERT INTO historiales (Paciente, Doctor, Observaciones, Tratamiento, Fecha) VALUES (?,?,?,?,?)",hs.Paciente,hs.Doctor,observaciones,hs.Tratamiento,fecha)
 	rows := database.ExecuteQuery("SELECT MAX(id) FROM historiales")
 	rows.Next()
 	var last int
@@ -49,7 +60,8 @@ func (hs *Historial) update() bool {
 	}
 	database.Connect()
 	defer database.Close()
-	database.ExecuteNonQuery("UPDATE historiales SET Paciente = ?, Doctor = ?, Observaciones = ?, Tratamiento = ?, Fecha = ? WHERE id = ?",hs.Paciente,hs.Doctor,hs.Observaciones,hs.Tratamiento,hs.Fecha,hs.id)
+	observaciones, fecha := hs.encrypt()
+	database.ExecuteNonQuery("UPDATE historiales SET Paciente = ?, Doctor = ?, Observaciones = ?, Tratamiento = ?, Fecha = ? WHERE id = ?",hs.Paciente,hs.Doctor,observaciones,hs.Tratamiento,fecha,hs.id)
 	return true
 }
 
