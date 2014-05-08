@@ -75,7 +75,7 @@ func RandomString() string {
 	max := 126
     var result   bytes.Buffer
     var temp string
-    l := randInt(8,32)
+    l := 64
     for i:=0 ; i<l ;  {
         if string(randInt(min,max))!=temp {
         temp = string(randInt(min,max))
