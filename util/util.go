@@ -70,7 +70,6 @@ func (cf *Cifrador) Decrypt(desencriptar []byte) []byte {
 }
 
 func RandomString() string {
-	//min 33 - 126
 	min := 33
 	max := 126
     var result   bytes.Buffer

@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS Historiales;
 DROP TABLE IF EXISTS Tratamientos;
 DROP TABLE IF EXISTS Doctores;
 DROP TABLE IF EXISTS Pacientes;
+DROP TABLE IF EXISTS Admin;
 
 CREATE TABLE IF NOT EXISTS Pacientes
 (
@@ -39,4 +40,12 @@ CREATE TABLE IF NOT EXISTS Historiales
 	Tratamiento int,
 	CONSTRAINT fk_Historiales_Pacientes FOREIGN KEY (Paciente) REFERENCES Pacientes (Id) ON UPDATE SET NULL ON DELETE SET NULL,
 	CONSTRAINT fk_Historiales_Doctores FOREIGN KEY (Doctor) REFERENCES Doctores (Id) ON UPDATE SET NULL ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS Admin
+(
+	Id int Primary Key Auto_Increment,
+	Nombre blob,
+	Password blob,
+	Salt blob
 );

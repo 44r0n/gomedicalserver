@@ -105,7 +105,7 @@ func (doc *Doctor) SetPassword(password string) bool {
 	}
 }
 
-func Authenticate(dni string, password string) bool {
+func AuthenticateDoctor(dni string, password string) bool {
 	database.Connect()
 	defer database.Close()
 	cifra := util.NuevoCifrador()
