@@ -12,10 +12,11 @@ type Doctor struct {
 	Apellidos string
 }
 
-func NuevoDoctor() *Doctor{
-	doc := new(Doctor)
-	return doc
-}
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos privados *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
 
 func (doc *Doctor) encrypt() ([]byte, []byte, []byte) {
 	cifra := util.NuevoCifrador()
@@ -27,21 +28,6 @@ func (doc *Doctor) decrypt(dni []byte, nombre []byte, apellidos []byte) {
 	doc.DNI = string(cifra.Decrypt(dni))
 	doc.Nombre = string(cifra.Decrypt(nombre))
 	doc.Apellidos = string(cifra.Decrypt(apellidos))
-}
-
-func (doc *Doctor) GetById(id int) *Doctor {
-	database.Connect()
-	defer database.Close()
-	rows := database.ExecuteQuery("SELECT Id, DNI, Nombre, Apellidos FROM doctores WHERE id = ?",id)
-	rows.Next()
-	var dni, nombre, apellidos []byte
-	rows.Scan(&doc.id,&dni,&nombre,&apellidos)
-	doc.decrypt(dni,nombre,apellidos)
-	return doc
-}
-
-func (doc *Doctor) GetId() int {
-	return doc.id
 }
 
 func (doc *Doctor) insert() {
@@ -69,6 +55,32 @@ func (doc *Doctor) update() bool {
 	dni, nombre , apellidos := doc.encrypt()
 	database.ExecuteNonQuery("UPDATE doctores SET DNI = ?, Nombre = ?, Apellidos = ? WHERE Id = ?",dni,nombre,apellidos,doc.id)
 	return true
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos Públicos *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
+func NuevoDoctor() *Doctor{
+	doc := new(Doctor)
+	return doc
+}
+
+func (doc *Doctor) GetById(id int) *Doctor {
+	database.Connect()
+	defer database.Close()
+	rows := database.ExecuteQuery("SELECT Id, DNI, Nombre, Apellidos FROM doctores WHERE id = ?",id)
+	rows.Next()
+	var dni, nombre, apellidos []byte
+	rows.Scan(&doc.id,&dni,&nombre,&apellidos)
+	doc.decrypt(dni,nombre,apellidos)
+	return doc
+}
+
+func (doc *Doctor) GetId() int {
+	return doc.id
 }
 
 func (doc *Doctor) Delete() bool {

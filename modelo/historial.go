@@ -13,6 +13,12 @@ type Historial struct {
 	Fecha time.Time
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos privados *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
 func (hs *Historial) encrypt() ([]byte, []byte) {
 	cifra := util.NuevoCifrador()
 	return cifra.Encrypt([]byte(hs.Observaciones)), cifra.Encrypt([]byte(hs.Fecha.Format("2006-01-02")))
@@ -22,21 +28,6 @@ func (hs *Historial) decrypt(observaciones, fecha []byte) {
 	cifra := util.NuevoCifrador()
 	hs.Observaciones = string(cifra.Decrypt(observaciones))
 	hs.Fecha, _ = time.Parse("2006-01-02",string(cifra.Decrypt(fecha)))
-}
-
-func(hs *Historial) GetById(id int) *Historial {
-	database.Connect()
-	defer database.Close()
-	rows := database.ExecuteQuery("SELECT * FROM historiales WHERE id = ?",id)
-	rows.Next()
-	var observaciones, fecha []byte
-	rows.Scan(&hs.id,&hs.Paciente,&hs.Doctor,&observaciones,&fecha,&hs.Tratamiento)
-	hs.decrypt(observaciones,fecha)
-	return hs
-}
-
-func(hs *Historial) GetId() int {
-	return hs.id
 }
 
 func (hs *Historial) insert() {
@@ -63,6 +54,27 @@ func (hs *Historial) update() bool {
 	observaciones, fecha := hs.encrypt()
 	database.ExecuteNonQuery("UPDATE historiales SET Paciente = ?, Doctor = ?, Observaciones = ?, Tratamiento = ?, Fecha = ? WHERE id = ?",hs.Paciente,hs.Doctor,observaciones,hs.Tratamiento,fecha,hs.id)
 	return true
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos Públicos *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
+func(hs *Historial) GetById(id int) *Historial {
+	database.Connect()
+	defer database.Close()
+	rows := database.ExecuteQuery("SELECT * FROM historiales WHERE id = ?",id)
+	rows.Next()
+	var observaciones, fecha []byte
+	rows.Scan(&hs.id,&hs.Paciente,&hs.Doctor,&observaciones,&fecha,&hs.Tratamiento)
+	hs.decrypt(observaciones,fecha)
+	return hs
+}
+
+func(hs *Historial) GetId() int {
+	return hs.id
 }
 
 func (hs *Historial) Delete() bool{

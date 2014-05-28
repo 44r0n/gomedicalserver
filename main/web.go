@@ -86,11 +86,14 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func main() {
-	http.HandleFunc("/view/", makeHandler(viewHandler))
-	http.HandleFunc("/edit/", makeHandler(editHandler))
-	http.HandleFunc("/save/", makeHandler(saveHandler))
+	
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("bootstrap/css/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("bootstrap/js/"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("bootstrap/img/"))))
+
+	http.HandleFunc("/view/", makeHandler(viewHandler))
+	http.HandleFunc("/edit/", makeHandler(editHandler))
+	http.HandleFunc("/save/", makeHandler(saveHandler))
+	
 	http.ListenAndServe(":8080",nil)
 }

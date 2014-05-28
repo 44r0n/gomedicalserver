@@ -10,10 +10,11 @@ type Paciente struct {
 	Apellidos string
 }
 
-func NuevoPaciente() *Paciente {
-	pac := new(Paciente)
-	return pac
-}
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos privados *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
 
 func (pac *Paciente) encrypt() ([]byte, []byte, []byte) {
 	cifra := util.NuevoCifrador()
@@ -25,6 +26,43 @@ func (pac *Paciente) decrypt(dni []byte, nombre []byte, apellidos []byte) {
 	pac.DNI = string(cifra.Decrypt(dni))
 	pac.Nombre = string(cifra.Decrypt(nombre))
 	pac.Apellidos = string(cifra.Decrypt(apellidos))
+}
+
+func (pac *Paciente) insert() {
+	if pac.id != 0 {
+		return
+	}
+	database.Connect()
+	defer database.Close()
+	dni, nombre, apellidos := pac.encrypt()
+	database.ExecuteNonQuery("INSERT INTO pacientes (DNI, Nombre, Apellidos) VALUES (?,?,?)", dni,nombre,apellidos);
+	rows := database.ExecuteQuery("SELECT MAX(id) FROM pacientes")
+	rows.Next()
+	var last int
+	rows.Scan(&last)
+	pac.id = last
+}
+
+func (pac *Paciente) update() bool {
+	if pac.id  == 0 {
+		return false
+	}
+	database.Connect()
+	defer database.Close()
+	dni, nombre, apellidos := pac.encrypt()
+	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE Id = ?",dni,nombre,apellidos,pac.id)
+	return true
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos Públicos *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
+func NuevoPaciente() *Paciente {
+	pac := new(Paciente)
+	return pac
 }
 
 func (pac *Paciente) Save() bool {
@@ -67,21 +105,6 @@ func (pac *Paciente) GetId() int {
 	return pac.id
 }
 
-func (pac *Paciente) insert() {
-	if pac.id != 0 {
-		return
-	}
-	database.Connect()
-	defer database.Close()
-	dni, nombre, apellidos := pac.encrypt()
-	database.ExecuteNonQuery("INSERT INTO pacientes (DNI, Nombre, Apellidos) VALUES (?,?,?)", dni,nombre,apellidos);
-	rows := database.ExecuteQuery("SELECT MAX(id) FROM pacientes")
-	rows.Next()
-	var last int
-	rows.Scan(&last)
-	pac.id = last
-}
-
 func (pac *Paciente) Delete() bool {
 	if pac.id == 0 {
 		return false
@@ -89,16 +112,5 @@ func (pac *Paciente) Delete() bool {
 	database.Connect()
 	defer database.Close()
 	database.ExecuteNonQuery("DELETE FROM pacientes WHERE Id = ?",pac.id)
-	return true
-}
-
-func (pac *Paciente) update() bool {
-	if pac.id  == 0 {
-		return false
-	}
-	database.Connect()
-	defer database.Close()
-	dni, nombre, apellidos := pac.encrypt()
-	database.ExecuteNonQuery("UPDATE pacientes SET DNI = ?, Nombre = ?, Apellidos = ? WHERE Id = ?",dni,nombre,apellidos,pac.id)
 	return true
 }

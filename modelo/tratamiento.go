@@ -9,10 +9,11 @@ type Tratamiento struct {
 	Observaciones string
 }
 
-func NuevoTratamiento() *Tratamiento {
-	tr := new(Tratamiento)
-	return tr
-}
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos privados *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
 
 func (tr *Tratamiento) encrypt() ([]byte, []byte) {
 	cifra := util.NuevoCifrador()
@@ -23,21 +24,6 @@ func (tr *Tratamiento) decrypt(nombreEnfermedad []byte, observaciones []byte) {
 	cifra := util.NuevoCifrador()
 	tr.NombreEnfermedad = string(cifra.Decrypt(nombreEnfermedad))
 	tr.Observaciones = string(cifra.Decrypt(observaciones))
-}
-
-func (tr *Tratamiento) GetById(id int) *Tratamiento {
-	database.Connect()
-	defer database.Close()
-	rows := database.ExecuteQuery("SELECT * FROM tratamientos WHERE id = ?",id)
-	rows.Next()
-	var nombreEnfermedad, observaciones []byte
-	rows.Scan(&tr.id,&nombreEnfermedad,&observaciones)
-	tr.decrypt(nombreEnfermedad,observaciones)
-	return tr
-}
-
-func (tr *Tratamiento) GetId() int {
-	return tr.id
 }
 
 func (tr *Tratamiento) insert() {
@@ -64,6 +50,32 @@ func (tr * Tratamiento) update() bool {
 	nombreEnfermedad, observaciones := tr.encrypt()
 	database.ExecuteNonQuery("UPDATE tratamientos SET NombreEnfermedad = ?, Observaciones = ? WHERE id = ?",nombreEnfermedad,observaciones,tr.id)
 	return true
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos Públicos *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
+func NuevoTratamiento() *Tratamiento {
+	tr := new(Tratamiento)
+	return tr
+}
+
+func (tr *Tratamiento) GetById(id int) *Tratamiento {
+	database.Connect()
+	defer database.Close()
+	rows := database.ExecuteQuery("SELECT * FROM tratamientos WHERE id = ?",id)
+	rows.Next()
+	var nombreEnfermedad, observaciones []byte
+	rows.Scan(&tr.id,&nombreEnfermedad,&observaciones)
+	tr.decrypt(nombreEnfermedad,observaciones)
+	return tr
+}
+
+func (tr *Tratamiento) GetId() int {
+	return tr.id
 }
 
 func (tr *Tratamiento) Delete() bool {

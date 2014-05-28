@@ -11,7 +11,7 @@ import (
 	//"time"
 	//"code.google.com/p/go.crypto/scrypt"
 	//"math/rand"
-    "time"
+    //"time"
     //"bytes"
     //"hospital/util"
 )
@@ -47,14 +47,14 @@ func main() {
 
 	fmt.Println(dk)*/
 
-	p := modelo.NuevoPaciente()
+	/*p := modelo.NuevoPaciente()
 	p.DNI = "12345678S"
 	p.Nombre = "Manolo"
 	p.Apellidos = "Solo"
 	p.Save()
 	fmt.Println("Paciente Guardado")
 	p.Nombre = "Antonio"
-	p.Save()
+	p.Save()*/
 
 	//p2 := modelo.NuevoPaciente()
 
@@ -76,7 +76,7 @@ func main() {
 
 	
 
-	d := modelo.NuevoDoctor()
+	/*d := modelo.NuevoDoctor()
 	d.DNI = "23456789B"
 	d.Nombre = "Pepe"
 	d.Apellidos = "Ese"
@@ -84,7 +84,7 @@ func main() {
 		fmt.Println("Doctor Guardado con el id: ",d.GetId())
 	} else {
 		fmt.Println("No se ha guardado el doctor")
-	}
+	}*/
 	/*d.Nombre = "Juan"
 	if !d.Save() {
 		fmt.Println("No se ha modificado")
@@ -111,11 +111,11 @@ func main() {
 	fmt.Println(d2.Apellidos)*/
 
 	
-	t := new(modelo.Tratamiento)
+	/*t := new(modelo.Tratamiento)
 	t.NombreEnfermedad = "Una"
 	t.Observaciones = "Te veo"
 	t.Save()
-	fmt.Println("Tratamiento Guardado")
+	fmt.Println("Tratamiento Guardado")*/
 
 	/*t2 := new(modelo.Tratamiento)
 	t2.GetById(1)
@@ -123,7 +123,7 @@ func main() {
 	fmt.Println(t2.Observaciones)*/
 
 	
-	h := new(modelo.Historial)
+	/*h := new(modelo.Historial)
 	h.Paciente = p.GetId()
 	h.Doctor = d.GetId()
 	h.Tratamiento = t.GetId()
@@ -134,6 +134,9 @@ func main() {
 	}
 	h1 := new(modelo.Historial)
 	h1.GetById(1)
-	fmt.Println(h1.Fecha.Format("2006-01-02"))
+	fmt.Println(h1.Fecha.Format("2006-01-02"))*/
+
+	fmt.Println("Historiales totales: ")
+	fmt.Println(modelo.Totales())
 
 }

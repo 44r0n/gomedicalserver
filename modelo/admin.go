@@ -15,6 +15,12 @@ func NuevoAdmin () *Admin{
 	return admin
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos privados *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
 func (admin *Admin) encrypt() ([]byte) {
 	cifra := util.NuevoCifrador()
 	return cifra.Encrypt([]byte(admin.Nombre))
@@ -23,21 +29,6 @@ func (admin *Admin) encrypt() ([]byte) {
 func (admin *Admin) decrypt(nombre []byte) {
 	cifra := util.NuevoCifrador()
 	admin.Nombre = string(cifra.Decrypt(nombre))
-}
-
-func (admin *Admin) GetById(id int) *Admin {
-	database.Connect()
-	defer database.Close()
-	rows := database.ExecuteQuery("SELECT Id, Nombre FROM Admin WHERE id = ?",id)
-	rows.Next()
-	var nombre []byte
-	rows.Scan(&admin.id,&nombre)
-	admin.decrypt(nombre)
-	return admin
-} 
-
-func (admin *Admin) GetId() int {
-	return admin.id
 }
 
 func (admin *Admin) insert() {
@@ -65,6 +56,27 @@ func (admin *Admin) update() bool {
 	nombre := admin.encrypt()
 	database.ExecuteNonQuery("UPDATE Admin SET Nombre = ? WHERE id = ?",nombre, admin.id)
 	return true
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+//                            * Métodos Públicos *                          //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
+func (admin *Admin) GetById(id int) *Admin {
+	database.Connect()
+	defer database.Close()
+	rows := database.ExecuteQuery("SELECT Id, Nombre FROM Admin WHERE id = ?",id)
+	rows.Next()
+	var nombre []byte
+	rows.Scan(&admin.id,&nombre)
+	admin.decrypt(nombre)
+	return admin
+} 
+
+func (admin *Admin) GetId() int {
+	return admin.id
 }
 
 func (admin *Admin) Delete() bool {
