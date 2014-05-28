@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS Historiales
 	Id int Primary Key Auto_Increment,
 	Paciente int,
 	Doctor int,
+	Tratamiento int,
 	Observaciones blob,
 	Fecha blob,
-	Tratamiento int,
 	CONSTRAINT fk_Historiales_Pacientes FOREIGN KEY (Paciente) REFERENCES Pacientes (Id) ON UPDATE SET NULL ON DELETE SET NULL,
 	CONSTRAINT fk_Historiales_Doctores FOREIGN KEY (Doctor) REFERENCES Doctores (Id) ON UPDATE SET NULL ON DELETE SET NULL
 );

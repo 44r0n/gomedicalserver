@@ -33,7 +33,7 @@ func NuevaContraseña(password string) ([]byte, []byte) {
 
 func CheckPassword(plainpassword string, password, salte []byte) bool {
 	cifra := NuevoCifrador()
-	dk, _ := scrypt.Key([]byte(plainpassword), cifra.Decrypt(salte), 65536, 16, 3, 32)
+	dk, _ := scrypt.Key([]byte(plainpassword), cifra.Decrypt(salte), n, r, p, keylen)
 	return bytes.Equal(dk,password)
 }
 
